@@ -33,14 +33,14 @@ class _PrintNode extends Comparable<_PrintNode> {
 }
 
 ///二叉树节点
-class BinaryTreeNode<K, Node extends BinaryTreeNode<K, Node>> {
+class _BinaryTreeNode<K, Node extends _BinaryTreeNode<K, Node>> {
   K _key;
 
   Node left;
   Node right;
   Node parent;
 
-  BinaryTreeNode(K key):_key = key;
+  _BinaryTreeNode(K key):_key = key;
 
   K get key => _key;
   void replaceWith(Node node) {
@@ -55,12 +55,12 @@ class BinaryTreeNode<K, Node extends BinaryTreeNode<K, Node>> {
   String get debugString => key.toString();
 }
 
-class BinaryTreePrinter {
-  static String treeStructureString(BinaryTreeNode _root) {
+class _BinaryTreePrinter {
+  static String treeStructureString(_BinaryTreeNode _root) {
     List<_PrintNode> nodeList = [];
     int minX = 0;
     int treeHeight = _root?.height ?? 0;
-    void traversal({BinaryTreeNode root, int positionX, int x, int y, int level}) {
+    void traversal({_BinaryTreeNode root, int positionX, int x, int y, int level}) {
       if (root == null) return;
       String strKey = root.debugString;
       int powNum = max(0, (treeHeight - level - 2));
@@ -130,12 +130,14 @@ class BinaryTreePrinter {
     return str;
   }
 
-  static printTree(BinaryTreeNode _root) {
+  static printTree(_BinaryTreeNode _root) {
     debugPrint('TreeStructure:'+treeStructureString(_root));
+    ///test的时候使用print才能保证把树结构打印出来
+    // print('TreeStructure:'+treeStructureString(_root));
   }
 }
 
-abstract class IterableElementError {
+abstract class _IterableElementError {
   /** Error thrown thrown by, e.g., [Iterable.first] when there is no result. */
   static StateError noElement() => new StateError("No element");
   /** Error thrown by, e.g., [Iterable.single] if there are too many results. */

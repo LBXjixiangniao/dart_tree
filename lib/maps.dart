@@ -7,7 +7,7 @@ bool _isToStringVisiting(Object o) {
   }
   return false;
 }
-abstract class CustomMapBase<K, V> extends MapMixin<K, V> {
+abstract class _CustomMapBase<K, V> extends MapMixin<K, V> {
   static String mapToString(Map<Object, Object> m) {
     // Reuses the list in IterableBase for detecting toString cycles.
     if (_isToStringVisiting(m)) {

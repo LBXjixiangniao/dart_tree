@@ -6,7 +6,7 @@ part of 'dart_tree.dart';
  * 如果二叉搜索树所有节点的平衡因子在{-1,0,1}范围内，则称为AVL树
  * 如果节点平衡因子 < 0，被称为“左重”；如果节点平衡因子 > 0，被称为“右重”；如果节点平衡因子 == 0， 有时简称为“平衡”
  */
-class _AVLTreeNode<K, Node extends _AVLTreeNode<K, Node>> extends BinaryTreeNode<K, Node> {
+class _AVLTreeNode<K, Node extends _AVLTreeNode<K, Node>> extends _BinaryTreeNode<K, Node> {
   ///平衡因子，新节点没有子树，所以平衡因子为0
   int factor = 0;
   _AVLTreeNode(K key) : super(key);
@@ -238,7 +238,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
     ///所以在此方法中判断是否需要重新平衡即可
     void replaceNodeInParent(Node oldNode, Node newNode) {
       void replace() {
-        newNode.parent = oldNode.parent;
+        newNode?.parent = oldNode.parent;
 
         ///删除oldNode
         if (oldNode.parent?.left == oldNode) {
@@ -764,7 +764,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
   }
 
   String treeStructureString() {
-    return BinaryTreePrinter.treeStructureString(_root);
+    return _BinaryTreePrinter.treeStructureString(_root);
   }
 
   void debugPrint() {
@@ -776,7 +776,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
 
   ///打印整个树结构
   void _printTree() {
-    BinaryTreePrinter.printTree(_root);
+    _BinaryTreePrinter.printTree(_root);
   }
 
   @visibleForTesting
@@ -786,6 +786,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
       if (node == null) {
         return 0;
       } else {
+        ///满足二叉搜索树规则
         bool result = true;
         Node left = node.left;
         Node right = node.right;
@@ -797,6 +798,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
           result = false;
         }
 
+        ///左右子树高度差不大于1，且节点的平衡因子factor正确
         if (result) {
           int leftHeight = checkNode(node.left);
           if (leftHeight == null) return null;
@@ -886,7 +888,7 @@ class AVLTreeMap<K, V> extends _AVLTree<K, _AVLTreeMapNode<K, V>> with MapMixin<
       int Function(K key1, K key2) compare,
       bool Function(dynamic potentialKey) isValidKey}) {
     AVLTreeMap<K, V> map = AVLTreeMap<K, V>(compare, isValidKey);
-    CustomMapBase.fillMapWithMappedIterable(map, iterable, key, value);
+    _CustomMapBase.fillMapWithMappedIterable(map, iterable, key, value);
     return map;
   }
 
@@ -902,7 +904,7 @@ class AVLTreeMap<K, V> extends _AVLTree<K, _AVLTreeMapNode<K, V>> with MapMixin<
   factory AVLTreeMap.fromIterables(Iterable<K> keys, Iterable<V> values,
       [int Function(K key1, K key2) compare, bool Function(dynamic potentialKey) isValidKey]) {
     AVLTreeMap<K, V> map = AVLTreeMap<K, V>(compare, isValidKey);
-    CustomMapBase.fillMapWithIterables(map, keys, values);
+    _CustomMapBase.fillMapWithIterables(map, keys, values);
     return map;
   }
 
@@ -1222,18 +1224,18 @@ class AVLTreeSet<E> extends _AVLTree<E, _AVLTreeSetNode<E>> with IterableMixin<E
   bool get isNotEmpty => _root != null;
 
   E get first {
-    if (_count == 0) throw IterableElementError.noElement();
+    if (_count == 0) throw _IterableElementError.noElement();
     return _first.key;
   }
 
   E get last {
-    if (_count == 0) throw IterableElementError.noElement();
+    if (_count == 0) throw _IterableElementError.noElement();
     return _last.key;
   }
 
   E get single {
-    if (_count == 0) throw IterableElementError.noElement();
-    if (_count > 1) throw IterableElementError.tooMany();
+    if (_count == 0) throw _IterableElementError.noElement();
+    if (_count > 1) throw _IterableElementError.tooMany();
     return _root.key;
   }
 

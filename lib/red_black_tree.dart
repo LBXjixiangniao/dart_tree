@@ -8,7 +8,7 @@ enum _NodeColor { Black, Red }
  * 如果二叉搜索树所有节点的平衡因子在{-1,0,1}范围内，则称为RedBlack树
  * 如果节点平衡因子 < 0，被称为“左重”；如果节点平衡因子 > 0，被称为“右重”；如果节点平衡因子 == 0， 有时简称为“平衡”
  */
-class _RedBlackTreeNode<K, Node extends _RedBlackTreeNode<K, Node>> extends BinaryTreeNode<K, Node> {
+class _RedBlackTreeNode<K, Node extends _RedBlackTreeNode<K, Node>> extends _BinaryTreeNode<K, Node> {
   ///平衡因子，新节点没有子树，所以平衡因子为0
   _NodeColor color;
   _RedBlackTreeNode(K key) : super(key);
@@ -190,7 +190,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
 
   void _insert(Node n, {Node root, _ReplaceCheck<Node> replaceIfExist}) {
     if (n == null) return;
-    String searchPath = '';
+    _DebugString searchPath = _DebugString();
     assert(() {
       if (debug) print('Insert:${n.key}**********************************\n');
       return true;
@@ -217,7 +217,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
     }
     _modificationCount++;
     assert(() {
-      if (debug) print(searchPath);
+      if (debug) print(searchPath.value);
       return true;
     }());
     assert(() {
@@ -230,10 +230,10 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
     }());
   }
 
-  void _insertRecurse(Node n, {Node root, _ReplaceCheck<Node> replaceIfExist, String searchPath}) {
+  void _insertRecurse(Node n, {Node root, _ReplaceCheck<Node> replaceIfExist, _DebugString searchPath}) {
     assert(n != null);
     assert(() {
-      if (debug) searchPath += '->${n.key}';
+      if (debug && root != null) searchPath.value += '->${root.key}';
       return true;
     }());
     // Recursively descend the tree until a leaf is found.
@@ -892,7 +892,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   }
 
   String treeStructureString() {
-    return BinaryTreePrinter.treeStructureString(_root);
+    return _BinaryTreePrinter.treeStructureString(_root);
   }
 
   void debugPrint() {
@@ -904,7 +904,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
 
   ///打印整个树结构
   void _printTree() {
-    BinaryTreePrinter.printTree(_root);
+    _BinaryTreePrinter.printTree(_root);
   }
 
   @visibleForTesting
@@ -914,6 +914,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
       if (node == null) {
         return 0;
       } else {
+        ///满足二叉搜索树规则
         bool result = true;
         Node left = node.left;
         Node right = node.right;
@@ -930,15 +931,19 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
           if (node.color == _NodeColor.Red) {
             if (node.left?.color == _NodeColor.Red || node.right?.color == _NodeColor.Red) return null;
           }
+          else if(node.color != _NodeColor.Black) {
+            ///每个节点是红色或黑色
+            return null;
+          }
 
           ///从给定节点到其任何后代NIL节点的每条路径都经过相同数量的黑色节点。
-          int leftHeightNodeNumber = checkNode(node.left);
-          if (leftHeightNodeNumber == null) return null;
-          int rightHeightNodeNumber = checkNode(node.right);
-          if (rightHeightNodeNumber == null) return null;
-          if (leftHeightNodeNumber != rightHeightNodeNumber) return null;
+          int leftBlackNodeNumber = checkNode(node.left);
+          if (leftBlackNodeNumber == null) return null;
+          int rightBlacktNodeNumber = checkNode(node.right);
+          if (rightBlacktNodeNumber == null) return null;
+          if (leftBlackNodeNumber != rightBlacktNodeNumber) return null;
 
-          return leftHeightNodeNumber + (node.color == _NodeColor.Black ? 1 : 0);
+          return leftBlackNodeNumber + (node.color == _NodeColor.Black ? 1 : 0);
         } else {
           return null;
         }
@@ -1019,7 +1024,7 @@ class RedBlackTreeMap<K, V> extends _RedBlackTree<K, _RedBlackTreeMapNode<K, V>>
       int Function(K key1, K key2) compare,
       bool Function(dynamic potentialKey) isValidKey}) {
     RedBlackTreeMap<K, V> map = RedBlackTreeMap<K, V>(compare, isValidKey);
-    CustomMapBase.fillMapWithMappedIterable(map, iterable, key, value);
+    _CustomMapBase.fillMapWithMappedIterable(map, iterable, key, value);
     return map;
   }
 
@@ -1035,7 +1040,7 @@ class RedBlackTreeMap<K, V> extends _RedBlackTree<K, _RedBlackTreeMapNode<K, V>>
   factory RedBlackTreeMap.fromIterables(Iterable<K> keys, Iterable<V> values,
       [int Function(K key1, K key2) compare, bool Function(dynamic potentialKey) isValidKey]) {
     RedBlackTreeMap<K, V> map = RedBlackTreeMap<K, V>(compare, isValidKey);
-    CustomMapBase.fillMapWithIterables(map, keys, values);
+    _CustomMapBase.fillMapWithIterables(map, keys, values);
     return map;
   }
 
@@ -1356,18 +1361,18 @@ class RedBlackTreeSet<E> extends _RedBlackTree<E, _RedBlackTreeSetNode<E>> with 
   bool get isNotEmpty => _root != null;
 
   E get first {
-    if (_count == 0) throw IterableElementError.noElement();
+    if (_count == 0) throw _IterableElementError.noElement();
     return _first.key;
   }
 
   E get last {
-    if (_count == 0) throw IterableElementError.noElement();
+    if (_count == 0) throw _IterableElementError.noElement();
     return _last.key;
   }
 
   E get single {
-    if (_count == 0) throw IterableElementError.noElement();
-    if (_count > 1) throw IterableElementError.tooMany();
+    if (_count == 0) throw _IterableElementError.noElement();
+    if (_count > 1) throw _IterableElementError.tooMany();
     return _root.key;
   }
 
@@ -1499,4 +1504,8 @@ class RedBlackTreeSet<E> extends _RedBlackTree<E, _RedBlackTreeSetNode<E>> with 
   Set<E> toSet() => _clone();
 
   String toString() => IterableBase.iterableToFullString(this, '{', '}');
+}
+
+class _DebugString {
+  String value = '';
 }
