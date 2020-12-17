@@ -131,9 +131,9 @@ class _BinaryTreePrinter {
   }
 
   static printTree(_BinaryTreeNode _root) {
-    debugPrint('TreeStructure:'+treeStructureString(_root));
+    // debugPrint('TreeStructure:'+treeStructureString(_root));
     ///test的时候使用print才能保证把树结构打印出来
-    // print('TreeStructure:'+treeStructureString(_root));
+    print('TreeStructure:'+treeStructureString(_root));
   }
 }
 

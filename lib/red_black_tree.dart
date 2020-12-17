@@ -88,6 +88,15 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   ///是否调试模式
   ///调试模式下增、删后会打印出整个RedBlack树，且搜索的时候会打印出查找路径
   bool debug = false;
+  ValueChanged<String> debugPrintMethod;
+  void debugPrint(String str) {
+    if(debugPrintMethod != null) {
+      debugPrintMethod.call(str);
+    }
+    else {
+      print(str);
+    }
+  }
 
   ///单次左旋
   /**
@@ -111,7 +120,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   void _rotateLeft(Node n) {
     if (n == null || n.right == null) return;
     assert(() {
-      if (debug) print('RotateLeft:${n.key.toString()}\n');
+      if (debug) debugPrint('RotateLeft:${n.key.toString()}\n');
       return true;
     }());
     Node nnew = n.right;
@@ -160,7 +169,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   void _rotateRight(Node n) {
     if (n == null || n.left == null) return;
     assert(() {
-      if (debug) print('RotateRight:${n.key.toString()}\n');
+      if (debug) debugPrint('RotateRight:${n.key.toString()}\n');
       return true;
     }());
     Node nnew = n.left;
@@ -192,7 +201,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
     if (n == null) return;
     _DebugString searchPath = _DebugString();
     assert(() {
-      if (debug) print('Insert:${n.key}**********************************\n');
+      if (debug) debugPrint('Insert:${n.key}**********************************\n');
       return true;
     }());
     // Insert new Node into the current tree.
@@ -217,15 +226,15 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
     }
     _modificationCount++;
     assert(() {
-      if (debug) print(searchPath.value);
+      if (debug) debugPrint(searchPath.value);
       return true;
     }());
     assert(() {
-      if (debug) _printTree();
+      if (debug) debugPrint('TreeStructure:${treeStructureString()}');
       return true;
     }());
     assert(() {
-      if (debug) print('End Insert:${n.key}**********************************\n');
+      if (debug) debugPrint('End Insert:${n.key}**********************************\n');
       return true;
     }());
   }
@@ -301,7 +310,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   void _insertCase1(Node n) {
     assert(n != null);
     assert(() {
-      if (debug) print('InserCase1\n');
+      if (debug) debugPrint('InserCase1\n');
       return true;
     }());
     n.color = _NodeColor.Black;
@@ -311,7 +320,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   void _insertCase2(Node n) {
     // Do nothing since tree is still valid.
     assert(() {
-      if (debug) print('InserCase2\n');
+      if (debug) debugPrint('InserCase2\n');
       return true;
     }());
     return;
@@ -340,7 +349,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   void _insertCase3(Node n) {
     assert(n != null);
     assert(() {
-      if (debug) print('InserCase3\n');
+      if (debug) debugPrint('InserCase3\n');
       return true;
     }());
     n.parent.color = _NodeColor.Black;
@@ -371,7 +380,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   void _insertCase4(Node n) {
     assert(n != null);
     assert(() {
-      if (debug) print('InserCase4\n');
+      if (debug) debugPrint('InserCase4\n');
       return true;
     }());
     Node p = n.parent;
@@ -411,7 +420,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   void _insertCase4Step2(Node n) {
     assert(n != null);
     assert(() {
-      if (debug) print('InserCase4Step2\n');
+      if (debug) debugPrint('InserCase4Step2\n');
       return true;
     }());
     Node p = n.parent;
@@ -430,9 +439,9 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   ///key: 需要删除的节点的key值
   ///root：指定查找的根结点，如果root不为null，则会从root开始查找key删除node
   Node _delete(K key, {Node root}) {
-    String searchPath = '';
+    String searchPath = 'SearchPath:';
     assert(() {
-      if (debug) print('Delete:$key**********************************\n');
+      if (debug) debugPrint('Delete:$key**********************************\n');
       return true;
     }());
 
@@ -469,15 +478,15 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
 
       Node deletedNode = remove(root ?? _root);
       assert(() {
-        if (debug) print(searchPath);
+        if (debug) debugPrint(searchPath);
         return true;
       }());
       assert(() {
-        if (debug) _printTree();
+        if (debug) debugPrint('TreeStructure:${treeStructureString()}');
         return true;
       }());
       assert(() {
-        if (debug) print('End Delete:$key**********************************\n');
+        if (debug) debugPrint('End Delete:$key**********************************\n');
         return true;
       }());
       return deletedNode?.copy();
@@ -487,7 +496,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   ///用newNode代替oldNode，newNode的parent、left、right都是从oldNode来
   void _replaceNode(Node oldNode, Node newNode) {
     assert(() {
-      if (debug) print('Replace ${oldNode.key.toString()} with ${newNode.key.toString()}\n');
+      if (debug) debugPrint('Replace ${oldNode.key.toString()} with ${newNode.key.toString()}\n');
       return true;
     }());
     if (oldNode == null) return;
@@ -516,7 +525,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   //删除最多只有一个子节点的节点
   void _deleteOneChild(Node n) {
     assert(() {
-        if (debug) print('DeleteOneChild:${n.key}**********************************\n');
+        if (debug) debugPrint('DeleteOneChild:${n.key}**********************************\n');
         return true;
       }());
     // Precondition: n has at most one non-leaf child.
@@ -561,7 +570,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
       _deleteCase2(n);
     } else {
       assert(() {
-        if (debug) print('DeleteCase1:${n.key}\n');
+        if (debug) debugPrint('DeleteCase1:${n.key}\n');
         return true;
       }());
     }
@@ -589,7 +598,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
 
     if (s.color == _NodeColor.Red) {
       assert(() {
-        if (debug) print('DeleteCase2:${n.key}\n');
+        if (debug) debugPrint('DeleteCase2:${n.key}\n');
         return true;
       }());
       n.parent.color = _NodeColor.Red;
@@ -624,7 +633,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
         (s.left == null || s.left.color == _NodeColor.Black) &&
         (s.right == null || s.right.color == _NodeColor.Black)) {
       assert(() {
-        if (debug) print('DeleteCase3:${n.key}\n');
+        if (debug) debugPrint('DeleteCase3:${n.key}\n');
         return true;
       }());
       s.color = _NodeColor.Red;
@@ -655,7 +664,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
         (s.left == null || s.left.color == _NodeColor.Black) &&
         (s.right == null || s.right.color == _NodeColor.Black)) {
       assert(() {
-        if (debug) print('DeleteCase4:${n.key}\n');
+        if (debug) debugPrint('DeleteCase4:${n.key}\n');
         return true;
       }());
       s.color = _NodeColor.Red;
@@ -687,7 +696,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
     // no red parent can have a red child).
     if (s.color == _NodeColor.Black) {
       assert(() {
-        if (debug) print('DeleteCase5:${n.key}\n');
+        if (debug) debugPrint('DeleteCase5:${n.key}\n');
         return true;
       }());
       // The following statements just force the red to be on the left of the
@@ -729,7 +738,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
  */
   void _deleteCase6(Node n) {
     assert(() {
-      if (debug) print('DeleteCase6:${n.key}\n');
+      if (debug) debugPrint('DeleteCase6:${n.key}\n');
       return true;
     }());
     Node s = n.sibling;
@@ -758,9 +767,9 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
   ///查找node.key == key的node
   ///root：指定查找的根结点，如果root不为null，则会从root开始查找
   Node _search(K key, {Node root}) {
-    String searchPath = '';
+    String searchPath = 'SearchPath:';
     assert(() {
-      if (debug) print('Search:**********************************\n');
+      if (debug) debugPrint('Search:**********************************\n');
       return true;
     }());
     if (_root == null || key == null)
@@ -790,7 +799,7 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
 
       Node resultNode = searchRecursively(root ?? _root);
       assert(() {
-        if (debug) print(searchPath);
+        if (debug) debugPrint(searchPath);
         return true;
       }());
       return resultNode;
@@ -893,18 +902,6 @@ abstract class _RedBlackTree<K, Node extends _RedBlackTreeNode<K, Node>> {
 
   String treeStructureString() {
     return _BinaryTreePrinter.treeStructureString(_root);
-  }
-
-  void debugPrint() {
-    assert(() {
-      _printTree();
-      return true;
-    }());
-  }
-
-  ///打印整个树结构
-  void _printTree() {
-    _BinaryTreePrinter.printTree(_root);
   }
 
   @visibleForTesting
@@ -1507,5 +1504,5 @@ class RedBlackTreeSet<E> extends _RedBlackTree<E, _RedBlackTreeSetNode<E>> with 
 }
 
 class _DebugString {
-  String value = '';
+  String value = 'SearchPath:';
 }

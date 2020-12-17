@@ -84,6 +84,15 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
   ///是否调试模式
   ///调试模式下增、删后会打印出整个AVL树，且搜索的时候会打印出查找路径
   bool debug = false;
+  ValueChanged<String> debugPrintMethod;
+  void debugPrint(String str) {
+    if(debugPrintMethod != null) {
+      debugPrintMethod.call(str);
+    }
+    else {
+      print(str);
+    }
+  }
 
   ///插入
   ///node：新插入的节点
@@ -92,9 +101,9 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
   ///如果replaceIfExist不为null且返回true则代替，否则不代替
   void _insert(Node node, {Node root, _ReplaceCheck<Node> replaceIfExist}) {
     if (node == null) return;
-    String searchPath = '';
+    String searchPath = 'SearchPath:';
     assert(() {
-      if (debug) print('Insert:${node.key}**********************************\n');
+      if (debug) debugPrint('Insert:${node.key}**********************************\n');
       return true;
     }());
 
@@ -140,15 +149,15 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
     }
     _modificationCount++;
     assert(() {
-      if (debug) print(searchPath);
+      if (debug) debugPrint(searchPath);
       return true;
     }());
     assert(() {
-      if (debug) _printTree();
+      if (debug) debugPrint('TreeStructure:${treeStructureString()}');
       return true;
     }());
     assert(() {
-      if (debug) print('End Insert:${node.key}**********************************\n');
+      if (debug) debugPrint('End Insert:${node.key}**********************************\n');
       return true;
     }());
   }
@@ -156,7 +165,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
   ///Z刚通过_insert方法插入的节点
   void _rebalanceForInsert(Node Z) {
     assert(() {
-      if (debug) print('RebalanceForInsert:${Z.key.toString()}');
+      if (debug) debugPrint('RebalanceForInsert:${Z.key.toString()}');
       return true;
     }());
     Node G;
@@ -228,9 +237,9 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
   ///key: 需要删除的节点的key值
   ///root：指定查找的根结点，如果root不为null，则会从root开始查找key删除node
   Node _delete(K key, {Node root}) {
-    String searchPath = '';
+    String searchPath = 'SearchPath:';
     assert(() {
-      if (debug) print('Delete:$key**********************************\n');
+      if (debug) debugPrint('Delete:$key**********************************\n');
       return true;
     }());
 
@@ -322,15 +331,15 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
 
       Node deletedNode = remove(root ?? _root);
       assert(() {
-        if (debug) print(searchPath);
+        if (debug) debugPrint(searchPath);
         return true;
       }());
       assert(() {
-        if (debug) _printTree();
+        if (debug) debugPrint('TreeStructure:${treeStructureString()}');
         return true;
       }());
       assert(() {
-        if (debug) print('End Delete:$key**********************************\n');
+        if (debug) debugPrint('End Delete:$key**********************************\n');
         return true;
       }());
       return deletedNode?.copy();
@@ -340,7 +349,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
   ///node为跟的子树高度降低了1，且N是已经已经平衡的AVL子树
   void _rebalanceForDelete(Node N) {
     assert(() {
-      if (debug) print('RebalanceForDelete:${N.key.toString()}');
+      if (debug) debugPrint('RebalanceForDelete:${N.key.toString()}');
       return true;
     }());
     Node G;
@@ -416,7 +425,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
   ///用newNode代替oldNode，newNode的parent、left、right都是从oldNode来
   void _replaceNode(Node oldNode, Node newNode) {
     assert(() {
-      if (debug) print('Replace ${oldNode.key.toString()} with ${newNode.key.toString()}\n');
+      if (debug) debugPrint('Replace ${oldNode.key.toString()} with ${newNode.key.toString()}\n');
       return true;
     }());
     if (oldNode == null) return;
@@ -426,9 +435,9 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
   ///查找node.key == key的node
   ///root：指定查找的根结点，如果root不为null，则会从root开始查找
   Node _search(K key, {Node root}) {
-    String searchPath = '';
+    String searchPath = 'SearchPath:';
     assert(() {
-      if (debug) print('Search:**********************************\n');
+      if (debug) debugPrint('Search:**********************************\n');
       return true;
     }());
     if (_root == null || key == null)
@@ -458,7 +467,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
 
       Node resultNode = searchRecursively(root ?? _root);
       assert(() {
-        if (debug) print(searchPath);
+        if (debug) debugPrint(searchPath);
         return true;
       }());
       return resultNode;
@@ -482,7 +491,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
    */
   Node _rotateLeft(Node X, Node Z) {
     assert(() {
-      if (debug) print('RotateLeft:${X.key.toString()},${Z.key.toString()}\n');
+      if (debug) debugPrint('RotateLeft:${X.key.toString()},${Z.key.toString()}\n');
       return true;
     }());
     // Z is by 2 higher than its sibling
@@ -521,7 +530,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
    */
   Node _rotateRight(Node X, Node Z) {
     assert(() {
-      if (debug) print('RotateRight:${X.key.toString()},${Z.key.toString()}\n');
+      if (debug) debugPrint('RotateRight:${X.key.toString()},${Z.key.toString()}\n');
       return true;
     }());
     // Z is by 2 higher than its sibling
@@ -570,7 +579,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
    */
   Node _rotateRightLeft(Node X, Node Z) {
     assert(() {
-      if (debug) print('RotateRightLeft:${X.key.toString()},${Z.key.toString()}\n');
+      if (debug) debugPrint('RotateRightLeft:${X.key.toString()},${Z.key.toString()}\n');
       return true;
     }());
     // Z is by 2 higher than its sibling
@@ -633,7 +642,7 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
    */
   Node _rotateLeftRight(Node X, Node Z) {
     assert(() {
-      if (debug) print('RotateLeftRight:${X.key.toString()},${Z.key.toString()}\n');
+      if (debug) debugPrint('RotateLeftRight:${X.key.toString()},${Z.key.toString()}\n');
       return true;
     }());
     // Z is by 2 higher than its sibling
@@ -765,18 +774,6 @@ abstract class _AVLTree<K, Node extends _AVLTreeNode<K, Node>> {
 
   String treeStructureString() {
     return _BinaryTreePrinter.treeStructureString(_root);
-  }
-
-  void debugPrint() {
-    assert(() {
-      _printTree();
-      return true;
-    }());
-  }
-
-  ///打印整个树结构
-  void _printTree() {
-    _BinaryTreePrinter.printTree(_root);
   }
 
   @visibleForTesting

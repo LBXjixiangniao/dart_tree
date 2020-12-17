@@ -5,9 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:dart_tree/dart_tree.dart';
 
-const int CirculateTime = 1000;
-const int Length = 300;
-const bool Debug = false;
+const int CirculateTime = 1;
+const int Length = 30;
+const bool Debug = true;
 void main() {
   test('Test Red-Black Set Tree', () {
     List.generate(CirculateTime, (index) {
