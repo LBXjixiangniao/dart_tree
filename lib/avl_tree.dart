@@ -923,7 +923,7 @@ class AVLTreeMap<K, V> extends _AVLTree<K, _AVLTreeMapNode<K, V>> with MapMixin<
 
   V putIfAbsent(K key, V ifAbsent()) {
     if (key == null) throw ArgumentError(key);
-    _AVLTreeMapNode node = _AVLTreeMapNode(key, null);
+    _AVLTreeMapNode<K, V> node = _AVLTreeMapNode<K, V>(key, null);
     bool absent = true;
     _insert(
       node,
@@ -1258,7 +1258,7 @@ class AVLTreeSet<E> extends _AVLTree<E, _AVLTreeSetNode<E>> with IterableMixin<E
 
   void addAll(Iterable<E> elements) {
     for (E element in elements) {
-      _insert(_AVLTreeSetNode(element));
+      _insert(_AVLTreeSetNode<E>(element));
     }
   }
 

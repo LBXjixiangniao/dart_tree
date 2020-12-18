@@ -1059,7 +1059,7 @@ class RedBlackTreeMap<K, V> extends _RedBlackTree<K, _RedBlackTreeMapNode<K, V>>
 
   V putIfAbsent(K key, V ifAbsent()) {
     if (key == null) throw ArgumentError(key);
-    _RedBlackTreeMapNode node = _RedBlackTreeMapNode(key, null);
+    _RedBlackTreeMapNode<K, V> node = _RedBlackTreeMapNode<K, V>(key, null);
     bool absent = true;
     _insert(
       node,
@@ -1395,7 +1395,7 @@ class RedBlackTreeSet<E> extends _RedBlackTree<E, _RedBlackTreeSetNode<E>> with 
 
   void addAll(Iterable<E> elements) {
     for (E element in elements) {
-      _insert(_RedBlackTreeSetNode(element));
+      _insert(_RedBlackTreeSetNode<E>(element));
     }
   }
 
